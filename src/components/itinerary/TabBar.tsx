@@ -1,25 +1,27 @@
 import type { FC, RefObject } from "react";
-import { DAYS } from "../../data/data.ts";
+import type { DayData } from "../../types/types";
 
 interface TabBarProps {
+    days: DayData[];
     active: number;
     onTabClick: (i: number) => void;
     tabBarRef: RefObject<HTMLDivElement>;
     activeTabRef: RefObject<HTMLButtonElement>;
+    prefix?: string;
 }
 
-const TabBar: FC<TabBarProps> = ({ active, onTabClick, tabBarRef, activeTabRef }) => (
-    <div className="rm-tabs-bar">
-        <div className="rm-tabs" ref={tabBarRef}>
-            {DAYS.map((d, i) => (
+const TabBar: FC<TabBarProps> = ({ days, active, onTabClick, tabBarRef, activeTabRef, prefix = "rm" }) => (
+    <div className={`${prefix}-tabs-bar`}>
+        <div className={`${prefix}-tabs`} ref={tabBarRef}>
+            {days.map((d, i) => (
                 <button
                     key={d.cls}
                     ref={active === i ? activeTabRef : null}
-                    className={`rm-tab${active === i ? " active" : ""}`}
+                    className={`${prefix}-tab${active === i ? " active" : ""}`}
                     onClick={() => onTabClick(i)}
                 >
-                    <span className="rm-tab-date">Day {i + 1} · {d.tabDate}</span>
-                    <span className="rm-tab-title">{d.tabTitle}</span>
+                    <span className={`${prefix}-tab-date`}>{d.tabDate}</span>
+                    <span className={`${prefix}-tab-title`}>{d.tabTitle}</span>
                 </button>
             ))}
         </div>

@@ -1,17 +1,23 @@
 import type { FC } from "react";
-import { FOOTER_TIPS } from "../../data/data.ts";
+import type { FooterTip } from "../../types/types";
 
-const Footer: FC = () => (
-    <div className="rm-footer">
-        {FOOTER_TIPS.map((t) => (
-            <div key={t.label} className="rm-ft">
-                <div className="rm-fi">{t.icon}</div>
-                <div className="rm-fx">
+interface FooterProps {
+    tips: FooterTip[];
+    brand: string;
+    prefix?: string;
+}
+
+const Footer: FC<FooterProps> = ({ tips, brand, prefix = "rm" }) => (
+    <div className={`${prefix}-footer`}>
+        {tips.map((t) => (
+            <div key={t.label} className={`${prefix}-ft`}>
+                <div className={`${prefix}-fi`}>{t.icon}</div>
+                <div className={`${prefix}-fx`}>
                     <strong>{t.label}</strong> {t.text}
                 </div>
             </div>
         ))}
-        <div className="rm-fbrand">Rockies Adventure · June 17–19, 2025</div>
+        <div className={`${prefix}-fbrand`}>{brand}</div>
     </div>
 );
 

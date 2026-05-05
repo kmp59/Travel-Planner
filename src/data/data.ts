@@ -1,9 +1,26 @@
-import type { DayData, FooterTip, RouteStop } from "../types/types.ts";
+import type { DayData, FooterTip, RouteStop, MapPin } from "../types/types";
 
-// ─── Map ──────────────────────────────────────────────────────────────────────
+// ─── Map pin registry ─────────────────────────────────────────────────────────
 
-export const MAP_SRC =
-    "https://www.google.com/maps/embed?pb=!1m40!1m12!1m3!1d1268246.5571449036!2d-116.96698987436339!3d51.62240210770338!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m25!3e0!4m5!1s0x5370c59595456331%3A0x46b6315f9e1e692e!2sCanmore%2C%20Alberta%2C%20Canada!3m2!1d51.0883666!2d-115.34791009999999!4m5!1s0x5377ffc8bef8baf3%3A0x6275384c55d05d50!2sColumbia%20Icefield%20Skywalk%2C%20columbia%20icefield%20skywalk%2C%20Icefields%20Pkwy%2C%20Improvement%20District%20No.%2012%2C%20AB%20T1L1J3%2C%20Canada!3m2!1d52.220315799999995!2d-117.2245253!4m5!1s0x5379bf9c63b14e69%3A0x1a042ac933b64441!2sGolden%2C%20British%20Columbia%2C%20Canada!3m2!1d51.296118799999995!2d-116.96313669999999!4m5!1s0x537170039f843fd5%3A0x266d3bb1b652b63a!2sCalgary%2C%20Alberta%2C%20Canada!3m2!1d51.044733099999995!2d-114.0718831!5e0!3m2!1sen!2sus!4v1776945636427!5m2!1sen!2sus";
+export const BANFF_MAP_PINS: Record<string, MapPin> = {
+    canmore:         { key: "canmore",         label: "Canmore, AB",              lat: 51.0884,  lng: -115.3479, icon: "village"  },
+    bowLake:         { key: "bowLake",         label: "Bow Lake",                 lat: 51.6716,  lng: -116.4637, icon: "landmark" },
+    columbiaIcefield:{ key: "columbiaIcefield",label: "Columbia Icefield Centre", lat: 52.2195,  lng: -117.2243, icon: "activity" },
+    sunwapta:        { key: "sunwapta",        label: "Sunwapta Falls",           lat: 52.2020,  lng: -117.6413, icon: "landmark" },
+    golden:          { key: "golden",          label: "Golden, BC",               lat: 51.2961,  lng: -116.9631, icon: "village"  },
+    emeraldLake:     { key: "emeraldLake",     label: "Emerald Lake, Yoho NP",   lat: 51.4375,  lng: -116.5327, icon: "landmark" },
+    takakkaw:        { key: "takakkaw",        label: "Takakkaw Falls",           lat: 51.5002,  lng: -116.4773, icon: "landmark" },
+    rogersPass:      { key: "rogersPass",      label: "Rogers Pass, Glacier NP",  lat: 51.2988,  lng: -117.5228, icon: "activity" },
+    paintPots:       { key: "paintPots",       label: "Paint Pots, Kootenay NP",  lat: 50.9987,  lng: -116.2295, icon: "landmark" },
+    marbleCanyon:    { key: "marbleCanyon",    label: "Marble Canyon",            lat: 51.0114,  lng: -116.1559, icon: "landmark" },
+    radiumHotSprings:{ key: "radiumHotSprings",label: "Radium Hot Springs",       lat: 50.6237,  lng: -116.0729, icon: "activity" },
+    calgary:         { key: "calgary",         label: "Calgary (YYC)",            lat: 51.0447,  lng: -114.0719, icon: "airport"  },
+};
+
+/** Return the MapPin objects for a given set of keys. */
+export function getPins(keys: string[]): MapPin[] {
+    return keys.map(k => BANFF_MAP_PINS[k]).filter(Boolean);
+}
 
 // ─── Route strip stops ────────────────────────────────────────────────────────
 
@@ -30,6 +47,7 @@ export const FOOTER_TIPS: FooterTip[] = [
 export const DAYS: DayData[] = [
     {
         cls: "d1", num: "01", tabDate: "Jun 17", tabTitle: "Canmore → Icefield",
+        mapPins: ["canmore", "bowLake", "columbiaIcefield", "sunwapta", "golden"],
         date: "Tuesday · June 17",
         title: "Canmore → Columbia Icefield → Golden",
         sub: "Check out, walk on ancient ice, settle into Golden",
@@ -48,6 +66,7 @@ export const DAYS: DayData[] = [
     },
     {
         cls: "d2", num: "02", tabDate: "Jun 18", tabTitle: "Yoho + Glacier NP",
+        mapPins: ["golden", "emeraldLake", "takakkaw", "rogersPass"],
         date: "Wednesday · June 18",
         title: "Yoho NP + Glacier NP Day Loop",
         sub: "Emerald lakes, thundering falls & cedar-canyon forests",
@@ -65,6 +84,7 @@ export const DAYS: DayData[] = [
     },
     {
         cls: "d3", num: "03", tabDate: "Jun 19", tabTitle: "Kootenay → Calgary",
+        mapPins: ["golden", "paintPots", "marbleCanyon", "radiumHotSprings", "calgary"],
         date: "Thursday · June 19",
         title: "Kootenay NP → Hot Springs → Calgary",
         sub: "Painted canyons, hanging glaciers & a mineral soak before the road home",

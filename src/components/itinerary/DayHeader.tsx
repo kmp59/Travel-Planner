@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { TagTuple } from "../../types/types.ts";
+import type { TagTuple } from "../../types/types";
 
 interface DayHeaderProps {
     num: string;
@@ -8,20 +8,21 @@ interface DayHeaderProps {
     sub: string;
     base: string;
     tags: TagTuple[];
+    prefix?: string;
 }
 
-const DayHeader: FC<DayHeaderProps> = ({ num, date, title, sub, base, tags }) => (
-    <div className="rm-dhdr">
-        <div className="rm-dhdr-top">
-            <div className="rm-dnum">{num}</div>
-            <div className="rm-dmeta">
-                <div className="rm-ddate">{date}</div>
-                <div className="rm-dtitle">{title}</div>
-                <div className="rm-dsub">{sub}</div>
-                <div className="rm-dbase">{base}</div>
+const DayHeader: FC<DayHeaderProps> = ({ num, date, title, sub, base, tags, prefix = "rm" }) => (
+    <div className={`${prefix}-dhdr`}>
+        <div className={`${prefix}-dhdr-top`}>
+            <div className={`${prefix}-dnum`}>{num}</div>
+            <div className={`${prefix}-dmeta`}>
+                <div className={`${prefix}-ddate`}>{date}</div>
+                <div className={`${prefix}-dtitle`}>{title}</div>
+                <div className={`${prefix}-dsub`}>{sub}</div>
+                <div className={`${prefix}-dbase`}>{base}</div>
             </div>
         </div>
-        <div className="rm-dtags">
+        <div className={`${prefix}-dtags`}>
             {tags.map(([label, cls]) => (
                 <span key={label} className={`tag ${cls}`}>{label}</span>
             ))}

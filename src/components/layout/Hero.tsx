@@ -1,5 +1,6 @@
 import type { FC } from "react";
-import { ROUTE_STOPS } from "../../data/data.ts";
+import { ROUTE_STOPS } from "../../data/data";
+import RouteStrip from "../itinerary/RouteStrip";
 
 const BADGES = [
     "June 17–19, 2025",
@@ -24,20 +25,8 @@ const Hero: FC = () => (
                     <span key={b} className="rm-badge">{b}</span>
                 ))}
             </div>
-            <div className="rm-hero-route-label">Full Trip Route</div>
-            <div className="rm-route rm-hero-route">
-                {ROUTE_STOPS.map((s, i) => (
-                    <div key={s.name} className="rs">
-                        <div className={`rs-dot${s.dot ? ` ${s.dot}` : ""}`} />
-                        <div className="rs-info">
-                            <div className="rs-name">{s.name}</div>
-                            <div className="rs-sub">{s.sub}</div>
-                        </div>
-                        {i < ROUTE_STOPS.length - 1 && <div className="rs-line" />}
-                    </div>
-                ))}
-            </div>
         </div>
+        <RouteStrip stops={ROUTE_STOPS} />
     </div>
 );
 

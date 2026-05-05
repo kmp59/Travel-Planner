@@ -4,12 +4,11 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
-  /* No height:100% — that would constrain scroll context and break position:sticky */
-  overflow-x: hidden; /* horizontal overflow lives here, not on .rm */
 }
 
 #root {

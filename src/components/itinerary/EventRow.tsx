@@ -1,24 +1,25 @@
 import type { FC } from "react";
-import type { EventItem } from "../../types/types.ts";
-import Pill from "../Common/Pill.tsx";
+import type { EventItem } from "../../types/types";
+import Pill from "../Common/Pill";
 
 interface EventRowProps extends EventItem {
     isLast: boolean;
+    prefix?: string;
 }
 
-const EventRow: FC<EventRowProps> = ({ time, icon, title, desc, pills, isLast }) => (
-    <div className="rm-tb">
-        <div className="rm-tc">
-            <span className="rm-tlab">{time}</span>
-            <div className="rm-tdot" />
-            {!isLast && <div className="rm-tbar" />}
+const EventRow: FC<EventRowProps> = ({ time, icon, title, desc, pills, isLast, prefix = "rm" }) => (
+    <div className={`${prefix}-tb`}>
+        <div className={`${prefix}-tc`}>
+            <span className={`${prefix}-tlab`}>{time}</span>
+            <div className={`${prefix}-tdot`} />
+            {!isLast && <div className={`${prefix}-tbar`} />}
         </div>
-        <div className="rm-ec">
-            <div className="rm-etit">{icon} {title}</div>
-            <div className="rm-edesc">{desc}</div>
-            <div className="rm-pills">
+        <div className={`${prefix}-ec`}>
+            <div className={`${prefix}-etit`}>{icon} {title}</div>
+            <div className={`${prefix}-edesc`}>{desc}</div>
+            <div className={`${prefix}-pills`}>
                 {pills.map(([label, variant]) => (
-                    <Pill key={label} label={label} variant={variant} />
+                    <Pill key={label} label={label} variant={variant} prefix={prefix} />
                 ))}
             </div>
         </div>

@@ -1,15 +1,15 @@
 import type { FC } from "react";
-import type { DayData } from "../../types/types.ts";
+import type { DayData } from "../../types/types";
 import DayHeader from "./DayHeader";
-import DriveBanner from "./DriveBanner";
 import Timeline from "./Timeline";
 
 interface DayCardProps {
     day: DayData;
+    prefix?: string;
 }
 
-const DayCard: FC<DayCardProps> = ({ day }) => (
-    <div className={`rm-day ${day.cls}`}>
+const DayCard: FC<DayCardProps> = ({ day, prefix = "rm" }) => (
+    <div className={`${prefix}-day ${day.cls}`}>
         <DayHeader
             num={day.num}
             date={day.date}
@@ -17,9 +17,10 @@ const DayCard: FC<DayCardProps> = ({ day }) => (
             sub={day.sub}
             base={day.base}
             tags={day.tags}
+            prefix={prefix}
         />
-        <DriveBanner text={day.drive} />
-        <Timeline events={day.events} />
+        <div className={`${prefix}-drive`}>{day.drive}</div>
+        <Timeline events={day.events} prefix={prefix} />
     </div>
 );
 
