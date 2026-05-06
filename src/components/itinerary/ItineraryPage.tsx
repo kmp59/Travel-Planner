@@ -11,7 +11,6 @@ interface ItineraryPageProps {
     css: string;
     prefix: string;
     resolvePins: (keys: string[]) => MapPin[];
-    mapApiKey: string;
     mapTitle: string;
     mapDistanceLabel: string;
     footerTips: FooterTip[];
@@ -25,7 +24,6 @@ const ItineraryPage: FC<ItineraryPageProps> = ({
                                                    css: pageCss,
                                                    prefix,
                                                    resolvePins,
-                                                   mapApiKey,
                                                    mapTitle,
                                                    mapDistanceLabel,
                                                    footerTips,
@@ -37,6 +35,7 @@ const ItineraryPage: FC<ItineraryPageProps> = ({
     const tabBarRef    = useRef<HTMLDivElement>(null);
     const activeTabRef = useRef<HTMLButtonElement>(null);
 
+    // Centre the active tab inside the horizontally-scrollable tab bar
     useEffect(() => {
         const bar = tabBarRef.current;
         const tab = activeTabRef.current;
@@ -75,7 +74,6 @@ const ItineraryPage: FC<ItineraryPageProps> = ({
                                 pins={resolvePins(days[active].mapPins)}
                                 title={mapTitle}
                                 distanceLabel={mapDistanceLabel}
-                                apiKey={mapApiKey}
                                 prefix={prefix}
                             />
                         </div>

@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { ROUTE_STOPS } from "../../data/data";
+import { ROUTE_STOPS } from "../../data/banff.data.ts";
 import RouteStrip from "../itinerary/RouteStrip";
 
 const BADGES = [

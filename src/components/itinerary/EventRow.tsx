@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import type { EventItem } from "../../types/types";
-import Pill from "../Common/Pill";
+import Pill from "../common/Pill";
 
 interface EventRowProps extends EventItem {
     isLast: boolean;

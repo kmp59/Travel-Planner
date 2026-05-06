@@ -1,33 +1,27 @@
 import { useEffect, useRef, type FC } from "react";
 import type { MapPin } from "../../types/types";
 
-// ─── Minimal inline types for the Maps JS API (no @types/Google Maps needed) ──
+// ─── Leaflet types (minimal inline — no @types/leaflet needed) ────────────────
 
-interface GLatLng       { lat: number; lng: number }
-interface GSize         { width: number; height: number }
-interface GPoint        { x: number; y: number }
-interface GLatLngBounds { extend(pos: GLatLng): void }
-interface GInfoWindow   { setContent(html: string): void; open(map: GMap, marker: GMarker): void }
-interface GMarker       { setMap(map: GMap | null): void; addListener(event: string, cb: () => void): void }
-interface GMap          {
-    setCenter(pos: GLatLng): void;
-    setZoom(z: number): void;
-    fitBounds(bounds: GLatLngBounds, padding: number): void;
+interface LLatLng        { lat: number; lng: number }
+interface LLatLngBounds  { extend(pos: LLatLng): LLatLngBounds }
+interface LMarker        { addTo(map: LMap): LMarker; bindPopup(html: string): LMarker; remove(): void }
+interface LMap           {
+    setView(pos: LLatLng, zoom: number): LMap;
+    fitBounds(bounds: LLatLngBounds, opts?: object): LMap;
+    remove(): void;
 }
-interface GMapsNS {
-    Map:         new (el: HTMLElement, opts: object) => GMap;
-    Marker:      new (opts: object) => GMarker;
-    InfoWindow:  new () => GInfoWindow;
-    LatLngBounds:new () => GLatLngBounds;
-    Size:        new (w: number, h: number) => GSize;
-    Point:       new (x: number, y: number) => GPoint;
+interface LIcon          { options: object }
+interface LeafletNS {
+    map:          (el: HTMLElement) => LMap;
+    tileLayer:    (url: string, opts: object) => { addTo(map: LMap): void };
+    marker:       (pos: LLatLng, opts?: object) => LMarker;
+    icon:         (opts: object) => LIcon;
+    latLngBounds: (corners: LLatLng[]) => LLatLngBounds;
 }
 
 declare global {
-    interface Window {
-        google: { maps: GMapsNS };
-        [key: string]: (() => void) | undefined;
-    }
+    interface Window { L: LeafletNS }
 }
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -36,7 +30,6 @@ interface MapCardProps {
     pins:          MapPin[];
     title:         string;
     distanceLabel: string;
-    apiKey:        string;
     prefix?:       string;
 }
 
@@ -54,32 +47,34 @@ function pinColour(pin: MapPin): string {
     return ICON_COLOUR[pin.icon ?? "landmark"] ?? "#f59e0b";
 }
 
-function makeSvgIcon(colour: string): string {
+function makeSvgUrl(colour: string): string {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36"><path d="M14 0C6.27 0 0 6.27 0 14c0 9.33 14 22 14 22S28 23.33 28 14C28 6.27 21.73 0 14 0z" fill="${colour}" stroke="white" stroke-width="1.5"/><circle cx="14" cy="14" r="6" fill="white"/></svg>`;
     return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
 }
 
-// ─── Loader — injects the Maps JS API script exactly once ────────────────────
+// ─── Loader — injects Leaflet CSS + JS exactly once ──────────────────────────
 
-let _mapsReady: Promise<void> | null = null;
+let _leafletReady: Promise<void> | null = null;
 
-function loadMapsApi(apiKey: string): Promise<void> {
-    if (window.google?.maps?.Map) return Promise.resolve();
-    if (_mapsReady) return _mapsReady;
-    _mapsReady = new Promise<void>((resolve, reject) => {
-        const callbackName = `_gmapsCb_${Date.now()}`;
-        window[callbackName] = () => {
-            resolve();
-            delete window[callbackName];
-        };
-        const s = document.createElement("script");
-        s.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=${callbackName}`;
-        s.async = true;
-        s.defer = true;
-        s.onerror = () => reject(new Error("Maps JS API failed to load"));
-        document.head.appendChild(s);
+function loadLeaflet(): Promise<void> {
+    if (window.L) return Promise.resolve();
+    if (_leafletReady) return _leafletReady;
+
+    _leafletReady = new Promise<void>((resolve, reject) => {
+        const link  = document.createElement("link");
+        link.rel    = "stylesheet";
+        link.href   = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+        document.head.appendChild(link);
+
+        const script   = document.createElement("script");
+        script.src     = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        script.async   = true;
+        script.onload  = () => resolve();
+        script.onerror = () => reject(new Error("Leaflet failed to load"));
+        document.head.appendChild(script);
     });
-    return _mapsReady;
+
+    return _leafletReady;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -88,77 +83,76 @@ const MapCard: FC<MapCardProps> = ({
                                        pins,
                                        title,
                                        distanceLabel,
-                                       apiKey,
                                        prefix = "rm",
                                    }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const mapRef       = useRef<GMap | null>(null);
-    const markersRef   = useRef<GMarker[]>([]);
+    const mapRef       = useRef<LMap | null>(null);
+    const markersRef   = useRef<LMarker[]>([]);
 
-    // Mount the map once
-    useEffect(() => {
-        if (!containerRef.current) return;
-        loadMapsApi(apiKey).then(() => {
-            if (!containerRef.current || mapRef.current) return;
-            const G = window.google.maps;
-            const defaultCentre = pins.length > 0
-                ? { lat: pins[0].lat, lng: pins[0].lng }
-                : { lat: 0, lng: 0 };
-            mapRef.current = new G.Map(containerRef.current, {
-                zoom:              8,
-                center:            defaultCentre,
-                mapTypeId:         "terrain",
-                mapTypeControl:    false,
-                streetViewControl: false,
-                fullscreenControl: true,
-            });
-        }).catch(console.error);
-        // apiKey never changes at runtime — intentionally omitted
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // Swap markers whenever pins prop changes
-    useEffect(() => {
-        const G   = window.google?.maps;
-        const map = mapRef.current;
-        if (!G || !map) return;
-
-        markersRef.current.forEach(m => m.setMap(null));
+    // ─── Helper: place markers for the current pins array ────────────────────
+    const placePins = (L: LeafletNS, map: LMap, pins: MapPin[]) => {
+        markersRef.current.forEach(m => m.remove());
         markersRef.current = [];
 
         if (pins.length === 0) return;
 
-        const bounds     = new G.LatLngBounds();
-        const infoWindow = new G.InfoWindow();
-
         pins.forEach(pin => {
-            const pos = { lat: pin.lat, lng: pin.lng };
-            bounds.extend(pos);
-            const marker = new G.Marker({
-                position: pos,
-                map,
-                title:    pin.label,
-                icon: {
-                    url:        makeSvgIcon(pinColour(pin)),
-                    scaledSize: new G.Size(28, 36),
-                    anchor:     new G.Point(14, 36),
-                },
+            const icon = L.icon({
+                iconUrl:     makeSvgUrl(pinColour(pin)),
+                iconSize:    [28, 36],
+                iconAnchor:  [14, 36],
+                popupAnchor: [0, -36],
             });
-            marker.addListener("click", () => {
-                infoWindow.setContent(
-                    `<div style="font:600 13px sans-serif;padding:2px 4px">${pin.label}</div>`
-                );
-                infoWindow.open(map, marker);
-            });
+            const marker = L.marker({ lat: pin.lat, lng: pin.lng }, { icon })
+                .addTo(map)
+                .bindPopup(`<div style="font:600 13px sans-serif;padding:2px 4px">${pin.label}</div>`);
             markersRef.current.push(marker);
         });
 
         if (pins.length === 1) {
-            map.setCenter({ lat: pins[0].lat, lng: pins[0].lng });
-            map.setZoom(13);
+            map.setView({ lat: pins[0].lat, lng: pins[0].lng }, 13);
         } else {
-            map.fitBounds(bounds, 48);
+            const bounds = L.latLngBounds(pins.map(p => ({ lat: p.lat, lng: p.lng })));
+            map.fitBounds(bounds, { padding: [48, 48] });
         }
+    };
+
+    // Mount the map once — place initial pins immediately after ready
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        loadLeaflet().then(() => {
+            if (!containerRef.current || mapRef.current) return;
+            const L = window.L;
+
+            const defaultCentre: LLatLng = pins.length > 0
+                ? { lat: pins[0].lat, lng: pins[0].lng }
+                : { lat: 0, lng: 0 };
+
+            mapRef.current = L.map(containerRef.current).setView(defaultCentre, 8);
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                maxZoom: 19,
+            }).addTo(mapRef.current);
+
+            // Place the initial pins right here — map is guaranteed ready
+            placePins(L, mapRef.current, pins);
+        }).catch(console.error);
+
+        return () => {
+            mapRef.current?.remove();
+            mapRef.current = null;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Swap markers whenever pins prop changes (tab switch)
+    useEffect(() => {
+        const L   = window.L;
+        const map = mapRef.current;
+        if (!L || !map) return; // map not ready yet — initial load handled above
+        placePins(L, map, pins);
     }, [pins]);
 
     const presentTypes = Array.from(new Set(pins.map(p => p.icon ?? "landmark")));
