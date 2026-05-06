@@ -60,7 +60,7 @@ export default function HomePage() {
                                 padding: '28px 28px 24px',
                                 cursor: 'pointer',
                                 transition: 'background .18s, transform .18s',
-                                position: 'absolute',
+                                position: 'relative',
                             }}
                                  onMouseEnter={e => {
                                      (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,.08)'
