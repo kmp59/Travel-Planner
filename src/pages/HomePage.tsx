@@ -71,18 +71,6 @@ export default function HomePage() {
                                      ;(e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'
                                  }}
                             >
-                                {/* Lock badge */}
-                                <div style={{
-                                    position: 'absolute', top: 14, right: 14,
-                                    background: `${t.color}22`,
-                                    border: `1px solid ${t.color}55`,
-                                    borderRadius: 100, padding: '3px 9px',
-                                    fontFamily: 'monospace', fontSize: 10,
-                                    color: t.color, letterSpacing: 1,
-                                    display: 'flex', alignItems: 'center', gap: 4,
-                                }}>
-                                    🔒 Protected
-                                </div>
 
                                 <div style={{ fontSize: '2rem', marginBottom: 12 }}>{t.emoji}</div>
 
