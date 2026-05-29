@@ -3,21 +3,20 @@ import type { RouteStop } from "../../types/types";
 
 interface RouteStripProps {
     stops: RouteStop[];
-    prefix?: string;
 }
 
-const RouteStrip: FC<RouteStripProps> = ({ stops, prefix = "rm" }) => (
-    <div className={`${prefix}-route-wrap`}>
-        <div className={`${prefix}-route-label`}>Full Trip Route</div>
-        <div className={`${prefix}-route`}>
+const RouteStrip: FC<RouteStripProps> = ({ stops }) => (
+    <div className="itin-route-wrap">
+        <div className="itin-route-label">Full Trip Route</div>
+        <div className="itin-route">
             {stops.map((s, i) => (
-                <div key={s.name} className={`${prefix}-rs`}>
-                    <div className={`${prefix}-rs-dot${s.dot ? ` ${s.dot}` : ""}`} />
-                    <div className={`${prefix}-rs-info`}>
-                        <div className={`${prefix}-rs-name`}>{s.name}</div>
-                        <div className={`${prefix}-rs-sub`}>{s.sub}</div>
+                <div key={s.name} className="itin-rs">
+                    <div className={`itin-rs-dot${s.dot ? ` ${s.dot}` : ""}`} />
+                    <div className="itin-rs-info">
+                        <div className="itin-rs-name">{s.name}</div>
+                        <div className="itin-rs-sub">{s.sub}</div>
                     </div>
-                    {i < stops.length - 1 && <div className={`${prefix}-rs-line`} />}
+                    {i < stops.length - 1 && <div className="itin-rs-line" />}
                 </div>
             ))}
         </div>

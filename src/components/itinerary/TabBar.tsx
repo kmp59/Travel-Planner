@@ -7,21 +7,20 @@ interface TabBarProps {
     onTabClick: (i: number) => void;
     tabBarRef: RefObject<HTMLDivElement>;
     activeTabRef: RefObject<HTMLButtonElement>;
-    prefix?: string;
 }
 
-const TabBar: FC<TabBarProps> = ({ days, active, onTabClick, tabBarRef, activeTabRef, prefix = "rm" }) => (
-    <div className={`${prefix}-tabs-bar`}>
-        <div className={`${prefix}-tabs`} ref={tabBarRef}>
+const TabBar: FC<TabBarProps> = ({ days, active, onTabClick, tabBarRef, activeTabRef }) => (
+    <div className="itin-tabs-bar">
+        <div className="itin-tabs" ref={tabBarRef}>
             {days.map((d, i) => (
                 <button
                     key={d.cls}
                     ref={active === i ? activeTabRef : null}
-                    className={`${prefix}-tab${active === i ? " active" : ""}`}
+                    className={`itin-tab${active === i ? " active" : ""}`}
                     onClick={() => onTabClick(i)}
                 >
-                    <span className={`${prefix}-tab-date`}>{d.tabDate}</span>
-                    <span className={`${prefix}-tab-title`}>{d.tabTitle}</span>
+                    <span className="itin-tab-date">{d.tabDate}</span>
+                    <span className="itin-tab-title">{d.tabTitle}</span>
                 </button>
             ))}
         </div>

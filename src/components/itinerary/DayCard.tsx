@@ -11,21 +11,20 @@ interface DayHeaderProps {
     sub: string;
     base: string;
     tags: TagTuple[];
-    prefix?: string;
 }
 
-const DayHeader: FC<DayHeaderProps> = ({ num, date, title, sub, base, tags, prefix = "rm" }) => (
-    <div className={`${prefix}-dhdr`}>
-        <div className={`${prefix}-dhdr-top`}>
-            <div className={`${prefix}-dnum`}>{num}</div>
-            <div className={`${prefix}-dmeta`}>
-                <div className={`${prefix}-ddate`}>{date}</div>
-                <div className={`${prefix}-dtitle`}>{title}</div>
-                <div className={`${prefix}-dsub`}>{sub}</div>
-                <div className={`${prefix}-dbase`}>{base}</div>
+const DayHeader: FC<DayHeaderProps> = ({ num, date, title, sub, base, tags }) => (
+    <div className="itin-dhdr">
+        <div className="itin-dhdr-top">
+            <div className="itin-dnum">{num}</div>
+            <div className="itin-dmeta">
+                <div className="itin-ddate">{date}</div>
+                <div className="itin-dtitle">{title}</div>
+                <div className="itin-dsub">{sub}</div>
+                <div className="itin-dbase">{base}</div>
             </div>
         </div>
-        <div className={`${prefix}-dtags`}>
+        <div className="itin-dtags">
             {tags.map(([label, cls]) => (
                 <span key={label} className={`tag ${cls}`}>{label}</span>
             ))}
@@ -37,22 +36,21 @@ const DayHeader: FC<DayHeaderProps> = ({ num, date, title, sub, base, tags, pref
 
 interface EventRowProps extends EventItem {
     isLast: boolean;
-    prefix?: string;
 }
 
-const EventRow: FC<EventRowProps> = ({ time, icon, title, desc, pills, isLast, prefix = "rm" }) => (
-    <div className={`${prefix}-tb`}>
-        <div className={`${prefix}-tc`}>
-            <span className={`${prefix}-tlab`}>{time}</span>
-            <div className={`${prefix}-tdot`} />
-            {!isLast && <div className={`${prefix}-tbar`} />}
+const EventRow: FC<EventRowProps> = ({ time, icon, title, desc, pills, isLast }) => (
+    <div className="itin-tb">
+        <div className="itin-tc">
+            <span className="itin-tlab">{time}</span>
+            <div className="itin-tdot" />
+            {!isLast && <div className="itin-tbar" />}
         </div>
-        <div className={`${prefix}-ec`}>
-            <div className={`${prefix}-etit`}>{icon} {title}</div>
-            <div className={`${prefix}-edesc`}>{desc}</div>
-            <div className={`${prefix}-pills`}>
+        <div className="itin-ec">
+            <div className="itin-etit">{icon} {title}</div>
+            <div className="itin-edesc">{desc}</div>
+            <div className="itin-pills">
                 {pills.map(([label, variant]) => (
-                    <Pill key={label} label={label} variant={variant} prefix={prefix} />
+                    <Pill key={label} label={label} variant={variant} />
                 ))}
             </div>
         </div>
@@ -63,13 +61,12 @@ const EventRow: FC<EventRowProps> = ({ time, icon, title, desc, pills, isLast, p
 
 interface TimelineProps {
     events: EventItem[];
-    prefix?: string;
 }
 
-const Timeline: FC<TimelineProps> = ({ events, prefix = "rm" }) => (
-    <div className={`${prefix}-tl`}>
+const Timeline: FC<TimelineProps> = ({ events }) => (
+    <div className="itin-tl">
         {events.map((ev, i) => (
-            <EventRow key={ev.time + String(i)} {...ev} isLast={i === events.length - 1} prefix={prefix} />
+            <EventRow key={ev.time + String(i)} {...ev} isLast={i === events.length - 1} />
         ))}
     </div>
 );
@@ -78,11 +75,10 @@ const Timeline: FC<TimelineProps> = ({ events, prefix = "rm" }) => (
 
 interface DayCardProps {
     day: DayData;
-    prefix?: string;
 }
 
-const DayCard: FC<DayCardProps> = ({ day, prefix = "rm" }) => (
-    <div className={`${prefix}-day ${day.cls}`}>
+const DayCard: FC<DayCardProps> = ({ day }) => (
+    <div className={`itin-day ${day.cls}`}>
         <DayHeader
             num={day.num}
             date={day.date}
@@ -90,10 +86,9 @@ const DayCard: FC<DayCardProps> = ({ day, prefix = "rm" }) => (
             sub={day.sub}
             base={day.base}
             tags={day.tags}
-            prefix={prefix}
         />
-        <div className={`${prefix}-drive`}>{day.drive}</div>
-        <Timeline events={day.events} prefix={prefix} />
+        <div className="itin-drive">{day.drive}</div>
+        <Timeline events={day.events} />
     </div>
 );
 

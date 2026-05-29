@@ -30,7 +30,6 @@ interface MapCardProps {
     pins:          MapPin[];
     title:         string;
     distanceLabel: string;
-    prefix?:       string;
 }
 
 // ─── Marker colours by pin icon type ─────────────────────────────────────────
@@ -79,12 +78,7 @@ function loadLeaflet(): Promise<void> {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const MapCard: FC<MapCardProps> = ({
-                                       pins,
-                                       title,
-                                       distanceLabel,
-                                       prefix = "rm",
-                                   }) => {
+const MapCard: FC<MapCardProps> = ({ pins, title, distanceLabel }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const mapRef       = useRef<LMap | null>(null);
     const markersRef   = useRef<LMarker[]>([]);
@@ -136,7 +130,6 @@ const MapCard: FC<MapCardProps> = ({
                 maxZoom: 19,
             }).addTo(mapRef.current);
 
-            // Place the initial pins right here — map is guaranteed ready
             placePins(L, mapRef.current, pins);
         }).catch(console.error);
 
@@ -151,18 +144,18 @@ const MapCard: FC<MapCardProps> = ({
     useEffect(() => {
         const L   = window.L;
         const map = mapRef.current;
-        if (!L || !map) return; // map not ready yet — initial load handled above
+        if (!L || !map) return;
         placePins(L, map, pins);
     }, [pins]);
 
     const presentTypes = Array.from(new Set(pins.map(p => p.icon ?? "landmark")));
 
     return (
-        <div className={`${prefix}-map-card`}>
-            <div className={`${prefix}-map-hdr`}>
-                <div className={`${prefix}-map-dot`} />
-                <span className={`${prefix}-map-t`}>{title}</span>
-                <span className={`${prefix}-map-km`}>{distanceLabel}</span>
+        <div className="itin-map-card">
+            <div className="itin-map-hdr">
+                <div className="itin-map-dot" />
+                <span className="itin-map-t">{title}</span>
+                <span className="itin-map-km">{distanceLabel}</span>
             </div>
 
             {presentTypes.length > 0 && (
@@ -178,7 +171,7 @@ const MapCard: FC<MapCardProps> = ({
 
             <div
                 ref={containerRef}
-                className={`${prefix}-map-frame`}
+                className="itin-map-frame"
                 style={{ width: "100%", height: "400px" }}
             />
         </div>

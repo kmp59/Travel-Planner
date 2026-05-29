@@ -35,11 +35,16 @@ const ItineraryPage: FC<ItineraryPageProps> = ({
     const tabBarRef    = useRef<HTMLDivElement>(null);
     const activeTabRef = useRef<HTMLButtonElement>(null);
 
-    // Centre the active tab inside the horizontally-scrollable tab bar
+    // Centre the active tab inside the horizontally-scrollable tab bar.
+    // Skip when active === 0 so mobile always starts flush-left on Day 1.
     useEffect(() => {
         const bar = tabBarRef.current;
         const tab = activeTabRef.current;
         if (!bar || !tab) return;
+        if (active === 0) {
+            bar.scrollTo({ left: 0, behavior: "smooth" });
+            return;
+        }
         bar.scrollTo({
             left: tab.offsetLeft - bar.offsetWidth / 2 + tab.offsetWidth / 2,
             behavior: "smooth",
@@ -63,29 +68,25 @@ const ItineraryPage: FC<ItineraryPageProps> = ({
                 onTabClick={handleTab}
                 tabBarRef={tabBarRef as RefObject<HTMLDivElement>}
                 activeTabRef={activeTabRef as RefObject<HTMLButtonElement>}
-                prefix={prefix}
             />
 
-            <div className={`${prefix}-scroll`}>
-                <div className={`${prefix}-inner`}>
-                    <div className={`${prefix}-body`}>
-                        <div className={`${prefix}-left`}>
-                            <MapCard
-                                pins={resolvePins(days[active].mapPins)}
-                                title={mapTitle}
-                                distanceLabel={mapDistanceLabel}
-                                prefix={prefix}
-                            />
-                        </div>
-                        <div className={`${prefix}-right`}>
-                            <div className={`${prefix}-sec`}>{sectionLabel(active)}</div>
-                            <DayCard key={active} day={days[active]} prefix={prefix} />
-                        </div>
+            <div className="itin-inner">
+                <div className="itin-body">
+                    <div className="itin-left">
+                        <MapCard
+                            pins={resolvePins(days[active].mapPins)}
+                            title={mapTitle}
+                            distanceLabel={mapDistanceLabel}
+                        />
+                    </div>
+                    <div className="itin-right">
+                        <div className="itin-sec">{sectionLabel(active)}</div>
+                        <DayCard key={active} day={days[active]} />
                     </div>
                 </div>
             </div>
 
-            <Footer tips={footerTips} brand={footerBrand} prefix={prefix} />
+            <Footer tips={footerTips} brand={footerBrand} />
         </div>
     );
 };

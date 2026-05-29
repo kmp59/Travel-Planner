@@ -12,23 +12,23 @@ const BADGES = [
 ] as const;
 
 const GtHero: FC = () => (
-    <div className="gt-hero">
+    <div className="itin-hero">
         <div className="gt-hero-bg" />
         <div className="gt-volcano-shape">
             <div className="gt-volcano-fill" />
             <div className="gt-volcano-glow" />
         </div>
-        <div className="gt-hero-inner">
-            <p className="gt-eyebrow">Guatemala · 7-Day Itinerary</p>
+        <div className="itin-hero-inner">
+            <p className="itin-eyebrow">Guatemala · 7-Day Itinerary</p>
             <h1>Colonial <em>Cobblestones</em> &amp; <em>Volcanic</em> Shores</h1>
-            <p className="gt-subtitle">Antigua Guatemala · Lake Atitlán · Acatenango</p>
-            <div className="gt-badges">
+            <p className="itin-subtitle">Antigua Guatemala · Lake Atitlán · Acatenango</p>
+            <div className="itin-badges">
                 {BADGES.map((b) => (
-                    <span key={b} className="gt-badge">{b}</span>
+                    <span key={b} className="itin-badge">{b}</span>
                 ))}
             </div>
         </div>
-        <RouteStrip stops={GT_ROUTE_STOPS} prefix="gt" />
+        <RouteStrip stops={GT_ROUTE_STOPS} />
     </div>
 );
 
